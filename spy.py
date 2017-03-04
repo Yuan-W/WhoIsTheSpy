@@ -14,7 +14,7 @@ from time import time
 from pydblite.sqlite import Database, Table
 from flask import Flask, session, redirect, url_for, render_template
 from flask_session import Session
-
+import redis
 from corpus import Corpus
 
 ROOM_ID_LEN = 5
@@ -45,7 +45,12 @@ except Exception:
     pass
 
 app = Flask(__name__)
-SESSION_TYPE = 'filesystem'
+
+SESSION_TYPE = 'redis'
+redis_url = os.getenv('REDISTOGO_URL', 'redis://localhost:6379')
+redis = redis.from_url(redis_url)
+SESSION_REDIS = redis
+
 app.config.from_object(__name__)
 Session(app)
 

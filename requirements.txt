@@ -2,3 +2,4 @@ PyDbLite
 Flask
 flask-session
 gunicorn
+redis
