@@ -4,3 +4,4 @@
 db/
 
 flask_session/
+*.sqlite

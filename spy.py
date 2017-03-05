@@ -19,6 +19,7 @@ from corpus import Corpus
 
 ROOM_ID_LEN = 5
 ID_RANGE = string.digits
+MAX_NUM_OF_RECORDS = 1000
 
 words_500 = Corpus('corpora/words-500.txt', wsgi=False)
 db_address = 'WhoIsTheSpy.sqlite'
@@ -82,6 +83,7 @@ def enter(room_id):
                          num=user_num, time=int(time()))
         else:
             users.insert(uid, room_id, user_num, int(time()))
+        db_clean(users)
         users.commit()
         user_record = users(uuid=uid)
 
@@ -120,6 +122,7 @@ def create(total):
             break
     rooms.insert(room_id, civ_word, spy_word, randint(1, total),
                  total, 0, randint(1, total), int(time()))
+    db_clean(rooms)
     rooms.commit()
     url = url_for('enter', room_id=room_id)
     return redirect(url)
@@ -174,6 +177,17 @@ def rules():
 def error(msg):
     return render_template('error.html', msg=msg)
 
+def db_clean(table, delete_ratio=0.1):
+    num_of_records = len(table)
+    if num_of_records > MAX_NUM_OF_RECORDS:
+        num_of_deletes = max(int(MAX_NUM_OF_RECORDS * delete_ratio),
+                             num_of_records - MAX_NUM_OF_RECORDS)
+        for i, row in enumerate(table):
+            if i >= num_of_deletes:
+                break
+            table.delete(row)
+        table.commit()
+
 
 if __name__ == "__main__":
     
@@ -181,5 +195,3 @@ if __name__ == "__main__":
         app.run('0.0.0.0')
     finally:
         db.close()
-        # if(os.path.exists(db_address)):
-        #     os.remove(db_address)
