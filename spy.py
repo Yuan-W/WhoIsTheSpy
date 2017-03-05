@@ -21,22 +21,18 @@ ROOM_ID_LEN = 5
 ID_RANGE = string.digits
 
 words_500 = Corpus('corpora/words-500.txt', wsgi=False)
-db_address = os.path.join('WhoIsTheSpy.sqlite')
+db_address = 'WhoIsTheSpy.sqlite'
 
 
 db = Database(db_address)
 
-users = Table('users', db)
-rooms = Table('rooms', db)
-
-users.create(('uuid', 'TEXT'), ('room', 'TEXT'),
-             ('num', 'INTEGER'), ('time', 'INTEGER'), mode='open')
-
-rooms.create(('room', 'TEXT'), ('civ_word', 'TEXT'),
-             ('spy_word', 'TEXT'), ('spy_num', 'INTEGER'),
-             ('total', 'INTEGER'), ('count', 'INTEGER'),
-             ('start', 'INTEGER'),
-             ('time', 'INTEGER'), mode='open')
+users = db.create('users', ('uuid', 'TEXT'), ('room', 'TEXT'), 
+                ('num', 'INTEGER'), ('time', 'INTEGER'), mode='open')
+rooms = db.create('rooms', ('room', 'TEXT'), ('civ_word', 'TEXT'),
+                ('spy_word', 'TEXT'), ('spy_num', 'INTEGER'),
+                ('total', 'INTEGER'), ('count', 'INTEGER'),
+                ('start', 'INTEGER'),
+                ('time', 'INTEGER'), mode='open')
 
 try:
     users.create_index('uuid')
@@ -185,5 +181,5 @@ if __name__ == "__main__":
         app.run('0.0.0.0')
     finally:
         db.close()
-        if(os.path.exists(db_address)):
-            os.remove(db_address)
+        # if(os.path.exists(db_address)):
+        #     os.remove(db_address)
